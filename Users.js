@@ -12,13 +12,12 @@ exports.readCSV = function () {
   });
 };
 
-exports.readPlain = function () {
+function readPlain() {
   fs.readFile("../Input_Files/input.txt", function (err, data) {
     if (err) {
       throw err;
     }
     let lines = data.toString().split("\n");
-    let numOfLines = lines.length;
     let key_line = lines[0];
     let keys = key_line.split(",");
     let Array_Of_Objects = [];
@@ -46,28 +45,34 @@ exports.readPlain = function () {
         }
       }
     );
+    resolve("resolved");
   });
-};
+}
 exports.saveToFile = function (arr, file_name) {
-
-    let myArray = [...arr]; 
-    let obj= {}; 
-    for(let i = 0 ; i < myArray.length ; i++){
-  obj[myArray[i].id] = myArray[i]; 
+  return new Promise((resolve, reject) => {
+    let obj = {};
+    for (let item of arr) {
+      obj[item.id] = item;
     }
-    fs.writeFile("../JSON_Files/"+file_name , JSON.stringify(obj),function (err){
-      if(err){
-        throw err ; 
+
+    fs.writeFile("../JSON_Files/" + file_name, JSON.stringify(obj), function (
+      err
+    ) {
+      if (err) {
+        throw err;
       }
-    })
 
- 
-};
-exports.readJsonFile = function (file_name) {
-  fs.readFile("../JSON_Files/" + file_name, function (err, data) {
-    if(err){
-      throw err ; 
-    }
-    console.log(JSON.parse(data)); 
+      resolve("go read");
+    });
+  }).then(() => {
+    readJsonFile(file_name);
   });
 };
+function readJsonFile(file_name) {
+  fs.readFile("../JSON_Files/" + file_name, function (err, data) {
+    if (err) {
+      throw err;
+    }
+    console.table(JSON.parse(data));
+  });
+}
